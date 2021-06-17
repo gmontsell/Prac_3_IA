@@ -113,10 +113,10 @@ def compMove():
 def minimax(board, depth, isMaximizing):
     if (checkWhichMarkWon(bot)):
         return 1
-    elif (checkWhichMarkWon(player)):
-        return -1
     elif (checkDraw()):
         return 0
+    elif (checkWhichMarkWon(player)):
+        return -1
 
     if (isMaximizing):
         bestScore = -800
