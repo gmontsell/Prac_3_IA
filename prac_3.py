@@ -13,32 +13,6 @@ def spaceIsFree(position):
     else:
         return False
 
-
-def insertLetter(letter, position):
-    if spaceIsFree(position):
-        board[position] = letter
-        printBoard(board)
-        if (checkDraw()):
-            print("Draw!")
-            exit()
-        if checkForWin():
-            if letter == 'X':
-                print("Bot wins!")
-                exit()
-            else:
-                print("Player wins!")
-                exit()
-
-        return
-
-
-    else:
-        print("Can't insert there!")
-        position = int(input("Please enter new position:  "))
-        insertLetter(letter, position)
-        return
-
-
 def checkForWin():
     if (board[1] == board[2] and board[1] == board[3] and board[1] != ' '):
         return True
@@ -87,42 +61,36 @@ def checkDraw():
             return False
     return True
 
-
-def playerMove():
-    position = int(input("Enter the position for 'O':  "))
-    insertLetter(player, position)
-    return
-
-
-def compMove():
+def startGame(symbol):
     bestScore = -800
-    bestMove = 0
-    for key in board.keys():
+    for key in board.keys(): #Checks every move, for every move creates the minimax
         if (board[key] == ' '):
-            board[key] = bot
-            score = minimax(board, 0, False)
+            board[key] = symbol
+            isMaximizing = (symbol == 'O')
+            print("------------------------")
+            score = minimax(board, 0, isMaximizing)
             board[key] = ' '
             if (score > bestScore):
                 bestScore = score
-                bestMove = key
-
-    insertLetter(bot, bestMove)
     return
 
-
 def minimax(board, depth, isMaximizing):
-    if (checkWhichMarkWon(bot)):
+    print("Profunditat espai d'estas: ",depth+1)
+    printBoard(board)
+    if (checkWhichMarkWon(maxi)):
+        count_prob[1] += 1
         return 1
     elif (checkDraw()):
         return 0
-    elif (checkWhichMarkWon(player)):
+    elif (checkWhichMarkWon(mini)):
+        count_prob[1] -= 1
         return -1
 
     if (isMaximizing):
-        bestScore = -800
+        bestScore = -1000
         for key in board.keys():
             if (board[key] == ' '):
-                board[key] = bot
+                board[key] = maxi
                 score = minimax(board, depth + 1, False)
                 board[key] = ' '
                 if (score > bestScore):
@@ -130,10 +98,10 @@ def minimax(board, depth, isMaximizing):
         return bestScore
 
     else:
-        bestScore = 800
+        bestScore = 1000
         for key in board.keys():
             if (board[key] == ' '):
-                board[key] = player
+                board[key] = mini
                 score = minimax(board, depth + 1, True)
                 board[key] = ' '
                 if (score < bestScore):
@@ -141,25 +109,16 @@ def minimax(board, depth, isMaximizing):
         return bestScore
 
 
-board = {1: 'X', 2: ' ', 3: 'O',
-         4: 'X', 5: 'O', 6: 'X',
+board = {1: 'X', 2: ' ', 3: 'O', 
+         4: 'X', 5: 'O', 6: 'X', 
          7: ' ', 8: ' ', 9: ' '}
 
+print("INITIAL STATE")
 printBoard(board)
-print("Computer goes first! Good luck.")
-print("Positions are as follow:")
-print("1, 2, 3 ")
-print("4, 5, 6 ")
-print("7, 8, 9 ")
-print("\n")
-player = 'O'
-bot = 'X'
-
-
-global firstComputerMove
-firstComputerMove = False
-
-while not checkForWin():
-    playerMove()
-    compMove()
-    
+print("FI")
+mini = 'O'
+maxi = 'X'
+count_prob = {1: 0}
+startGame('O')
+print("Si comparem els resultat de l'espai d'estats és: ",count_prob[1])
+print("Per tant té més possibilitats de guanyar el jugador: ","O" if count_prob[1] < 0 else "X")
